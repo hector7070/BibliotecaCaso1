@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Abstracciones/Abstracciones.csproj" />
+  <Project Path="BibliotecaCaso1/BibliotecaCaso1.csproj" />
+  <Project Path="DA/DA.csproj" />
+  <Project Path="Flujo/Flujo.csproj" />
+</Solution>
