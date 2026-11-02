@@ -1,4 +1,5 @@
 using Abstracciones.Libros;
+using Abstracciones.PrestamoLibros;
 using Abstracciones.Usuarios;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,7 @@ namespace DA.Contexto
 
         public DbSet<Usuario> Usuarios => Set<Usuario>();
         public DbSet<Libro> Libros => Set<Libro>();
+        public DbSet<PrestamoLibro> PrestamosLibros => Set<PrestamoLibro>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
