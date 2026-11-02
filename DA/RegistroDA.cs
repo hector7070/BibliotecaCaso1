@@ -1,7 +1,9 @@
 using Abstracciones.Libros;
+using Abstracciones.PrestamoLibros;
 using Abstracciones.Usuarios;
 using DA.Contexto;
 using DA.Libros;
+using DA.PrestamoLibros;
 using DA.Usuarios;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +17,7 @@ namespace DA
             servicios.AddDbContext<BibliotecaContexto>(o => o.UseSqlServer(cadenaConexion));
             servicios.AddScoped<IUsuarioDA, UsuarioDA>();
             servicios.AddScoped<ILibroDA, LibroDA>();
+            servicios.AddScoped<IPrestamoLibroDA, PrestamoLibroDA>();
             return servicios;
         }
     }
