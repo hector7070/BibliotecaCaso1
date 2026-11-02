@@ -9,7 +9,14 @@
   <ItemGroup>
     <Folder Include="Libros\" />
     <Folder Include="PrestamoLibros\" />
-    <Folder Include="Usuarios\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.14" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Abstracciones\Abstracciones.csproj" />
   </ItemGroup>
 
 </Project>

@@ -9,7 +9,10 @@
   <ItemGroup>
     <Folder Include="Libros\" />
     <Folder Include="PrestamoLibros\" />
-    <Folder Include="Usuarios\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Abstracciones\Abstracciones.csproj" />
   </ItemGroup>
 
 </Project>

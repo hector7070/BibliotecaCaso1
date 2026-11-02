@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="Libros\" />
     <Folder Include="PrestamoLibros\" />
-    <Folder Include="Usuarios\" />
   </ItemGroup>
 
 </Project>
