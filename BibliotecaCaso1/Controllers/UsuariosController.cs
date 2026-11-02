@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Abstracciones.Usuarios;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BibliotecaCaso1.Controllers
 {
@@ -58,12 +59,5 @@ namespace BibliotecaCaso1.Controllers
             await _flujo.EliminarAsync(id, ct);
             return NoContent();
         }
-
-        /// <summary>Ejemplo de procedimiento almacenado con parámetros. Sustituye al antiguo alta por SP.</summary>
-        [HttpGet("buscar-sp")]
-        [ProducesResponseType<List<UsuarioDto>>(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<UsuarioDto>>> BuscarSp([FromQuery] string? nombre, CancellationToken ct) =>
-            Ok(await _flujo.BuscarPorNombreSpAsync(nombre, ct));
     }
 }
-

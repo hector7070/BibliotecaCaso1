@@ -1,13 +1,10 @@
-﻿using Abstracciones.Usuarios;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Abstracciones.Usuarios;
 
 namespace Flujo.Usuarios
 {
-    public class UsuarioMapeador
+    public static class UsuarioMapeador
     {
         public static UsuarioDto ADto(Usuario u) =>
-      new(u.Id, u.Nombre, u.Correo, u.Telefono, u.FechaRegistro);
+            new(u.Id, u.Nombre, u.Correo, u.Telefono, u.FechaRegistro);
     }
 }
