@@ -1,17 +1,14 @@
-﻿using Abstracciones.Usuarios;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Abstracciones.Comunes;
+using Abstracciones.Excepciones;
+using Abstracciones.Usuarios;
 
 namespace Flujo.Usuarios
 {
-    public class UsuarioFlujo
+    public class UsuarioFlujo : IUsuarioFlujo
     {
         private readonly IUsuarioDA _da;
         private readonly TimeProvider _reloj;
 
-        // ****PROFESOR: **** TimeProvider en vez de DateTime.UtcNow directo: en las pruebas se puede
-        // controlar el reloj. Sin esto, cualquier regla que dependa de la fecha es imposible de probar bien.
         public UsuarioFlujo(IUsuarioDA da, TimeProvider reloj)
         {
             _da = da;
@@ -44,7 +41,7 @@ namespace Flujo.Usuarios
             if (await _da.ObtenerPorCorreoAsync(correo, ct) is not null)
                 throw new ConflictoException($"Ya existe un usuario con el correo '{correo}'.");
 
-            var usuario = new Usuario   
+            var usuario = new Usuario
             {
                 Nombre = dto.Nombre.Trim(),
                 Correo = correo,
@@ -62,7 +59,6 @@ namespace Flujo.Usuarios
 
             _ = await _da.ObtenerPorIdAsync(id, ct) ?? throw new NoEncontradoException("Usuario", id);
 
-            // El correo puede repetirse solo si pertenece al MISMO usuario que se está editando.
             var otro = await _da.ObtenerPorCorreoAsync(correo, ct);
             if (otro is not null && otro.Id != id)
                 throw new ConflictoException($"Ya existe otro usuario con el correo '{correo}'.");
@@ -89,10 +85,6 @@ namespace Flujo.Usuarios
                 throw new NoEncontradoException("Usuario", id);
         }
 
-        // UNA sola regla de normalización para TODOS los caminos de escritura.
         private static string NormalizarCorreo(string correo) => correo.Trim().ToLowerInvariant();
-
-        private static string? LimpiarOpcional(string? texto) =>
-            string.IsNullOrWhiteSpace(texto) ? null : texto.Trim();
     }
 }

@@ -1,17 +1,37 @@
+using System.Text.Json.Serialization;
+using BibliotecaCaso1.Errores;
+using DA;
+using Flujo;
+using Scalar.AspNetCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<ManejadorExcepcionesGlobal>();
+
 builder.Services.AddOpenApi();
+
+var cadenaConexion = builder.Configuration.GetConnectionString("Biblioteca")
+    ?? throw new InvalidOperationException("Falta ConnectionStrings:Biblioteca en appsettings.json.");
+
+builder.Services.AddDatos(cadenaConexion);
+builder.Services.AddFlujo();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseExceptionHandler();
+app.UseStatusCodePages();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseAuthorization();

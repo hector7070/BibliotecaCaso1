@@ -1,18 +1,20 @@
-﻿using Abstracciones.Libros;
+using Abstracciones.Libros;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BibliotecaCaso1.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class LibrosController : ControllerBase
     {
         private readonly ILibroFlujo _flujo;
 
-        public UsuariosController(IUsuarioFlujo flujo) => _flujo = flujo;
+        public LibrosController(ILibroFlujo flujo) => _flujo = flujo;
 
         [HttpGet]
-        [ProducesResponseType<IReadOnlyList<UsuarioDto>>(StatusCodes.Status200OK)]
+        [ProducesResponseType<IReadOnlyList<LibroDto>>(StatusCodes.Status200OK)]
         [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IReadOnlyList<UsuarioDto>>> Listar([FromQuery] UsuarioFiltro filtro, CancellationToken ct)
+        public async Task<ActionResult<IReadOnlyList<LibroDto>>> Listar([FromQuery] LibroFiltro filtro, CancellationToken ct)
         {
             var resultado = await _flujo.ListarAsync(filtro, ct);
             Response.Headers["X-Total-Count"] = resultado.Total.ToString();
@@ -22,16 +24,16 @@ namespace BibliotecaCaso1.Controllers
         }
 
         [HttpGet("{id:int:min(1)}")]
-        [ProducesResponseType<UsuarioDto>(StatusCodes.Status200OK)]
+        [ProducesResponseType<LibroDto>(StatusCodes.Status200OK)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<UsuarioDto>> Obtener(int id, CancellationToken ct) =>
+        public async Task<ActionResult<LibroDto>> Obtener(int id, CancellationToken ct) =>
             Ok(await _flujo.ObtenerAsync(id, ct));
 
         [HttpPost]
-        [ProducesResponseType<UsuarioDto>(StatusCodes.Status201Created)]
+        [ProducesResponseType<LibroDto>(StatusCodes.Status201Created)]
         [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
-        public async Task<ActionResult<UsuarioDto>> Crear(UsuarioCrearDto dto, CancellationToken ct)
+        public async Task<ActionResult<LibroDto>> Crear(LibroCrearDto dto, CancellationToken ct)
         {
             var creado = await _flujo.CrearAsync(dto, ct);
             return CreatedAtAction(nameof(Obtener), new { id = creado.Id }, creado);
@@ -42,7 +44,7 @@ namespace BibliotecaCaso1.Controllers
         [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status409Conflict)]
-        public async Task<IActionResult> Actualizar(int id, UsuarioActualizarDto dto, CancellationToken ct)
+        public async Task<IActionResult> Actualizar(int id, LibroActualizarDto dto, CancellationToken ct)
         {
             await _flujo.ActualizarAsync(id, dto, ct);
             return NoContent();
@@ -57,11 +59,5 @@ namespace BibliotecaCaso1.Controllers
             await _flujo.EliminarAsync(id, ct);
             return NoContent();
         }
-
-        /// <summary>Ejemplo de procedimiento almacenado con parámetros. Sustituye al antiguo alta por SP.</summary>
-        [HttpGet("buscar-sp")]
-        [ProducesResponseType<List<UsuarioDto>>(StatusCodes.Status200OK)]
-        public async Task<ActionResult<List<UsuarioDto>>> BuscarSp([FromQuery] string? nombre, CancellationToken ct) =>
-            Ok(await _flujo.BuscarPorNombreSpAsync(nombre, ct));
     }
 }

@@ -1,7 +1,9 @@
-﻿using DA.Contexto;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Abstracciones.Comunes;
+using Abstracciones.Excepciones;
+using Abstracciones.Usuarios;
+using DA.Comunes;
+using DA.Contexto;
+using Microsoft.EntityFrameworkCore;
 
 namespace DA.Usuarios
 {
@@ -13,7 +15,6 @@ namespace DA.Usuarios
 
         public async Task<ResultadoPaginado<Usuario>> BuscarAsync(UsuarioFiltro filtro, CancellationToken ct)
         {
-            // AsNoTracking: solo leemos, EF no necesita vigilar los objetos.
             IQueryable<Usuario> consulta = _ctx.Usuarios.AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(filtro.Q))
@@ -21,13 +22,11 @@ namespace DA.Usuarios
                 var texto = filtro.Q.Trim();
                 consulta = consulta.Where(u =>
                     u.Nombre.Contains(texto) ||
-                    u.Correo.Contains(texto) ||
-                    (u.Empresa != null && u.Empresa.Contains(texto)));
+                    u.Correo.Contains(texto));
             }
 
             var total = await consulta.CountAsync(ct);
 
-            // Orden estable (Nombre, luego Id) para que la paginación no repita ni se salte filas.
             var items = await consulta
                 .OrderBy(u => u.Nombre).ThenBy(u => u.Id)
                 .Skip((filtro.Pagina - 1) * filtro.Tamano)
@@ -65,14 +64,12 @@ namespace DA.Usuarios
 
         public async Task<bool> ActualizarAsync(Usuario datos, CancellationToken ct)
         {
-            // Entidad rastreada: EF detecta SOLO las propiedades que cambiaron y genera un UPDATE mínimo.
             var existente = await _ctx.Usuarios.FirstOrDefaultAsync(u => u.Id == datos.Id, ct);
             if (existente is null) return false;
 
             existente.Nombre = datos.Nombre;
             existente.Correo = datos.Correo;
             existente.Telefono = datos.Telefono;
-            existente.Empresa = datos.Empresa;
 
             try
             {
@@ -80,7 +77,7 @@ namespace DA.Usuarios
             }
             catch (DbUpdateException ex) when (ErroresSql.EsDuplicado(ex))
             {
-                throw new ConflictoException($"Ya existe otro cliente con el correo '{datos.Correo}'.");
+                throw new ConflictoException($"Ya existe otro usuario con el correo '{datos.Correo}'.");
             }
             return true;
         }
@@ -97,13 +94,12 @@ namespace DA.Usuarios
             }
             catch (DbUpdateException ex) when (ErroresSql.EsLlaveForanea(ex))
             {
-                throw new ConflictoException("El usuario tiene tickets asociados y no se puede eliminar.");
+                throw new ConflictoException("El usuario tiene préstamos o libros asociados y no se puede eliminar.");
             }
             return true;
         }
 
         public Task<bool> TieneLibrosAsync(int usuarioId, CancellationToken ct) =>
-            _ctx.Libro.AnyAsync(t => t.UsuarioId == usuarioId, ct);
-
+            Task.FromResult(false);
     }
 }
